@@ -1,10 +1,7 @@
 # resume-book-automation
   ![Python](https://img.shields.io/badge/Python-blue)
       ![Jupyter Notebook](https://img.shields.io/badge/Jupyter-Notebook-orange)
-      ![Flask](https://img.shields.io/badge/Flask-gray)
-      ![HTML](https://img.shields.io/badge/HTML-5-red)
       ![CSS](https://img.shields.io/badge/CSS-3-blue)
-      ![JavaScript](https://img.shields.io/badge/JavaScript-yellow)
 <table>
   <tr>
     <td>
