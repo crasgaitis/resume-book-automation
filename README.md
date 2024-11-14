@@ -1,7 +1,8 @@
 # resume-book-automation
-  ![Python](https://img.shields.io/badge/Python-blue)
-      ![Jupyter Notebook](https://img.shields.io/badge/Jupyter-Notebook-orange)
-      ![CSS](https://img.shields.io/badge/CSS-3-blue)
+  ![Jupyter Notebook](https://img.shields.io/badge/Jupyter-orange)
+  ![Jupyter Notebook](https://img.shields.io/badge/Streamlit-red)
+      ![Python](https://img.shields.io/badge/Python-blue)
+            ![CSS](https://img.shields.io/badge/CSS-blue)
 <table>
   <tr>
     <td>
@@ -15,3 +16,5 @@
   </tr>
 </table>
 
+We're live at https://uw-cse-resume-book.streamlit.app. <br/>
+Made with 🧡 by Catherine Rasgaitis.
