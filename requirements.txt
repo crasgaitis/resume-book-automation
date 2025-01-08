@@ -1,2 +1,10 @@
 matplotlib==3.8.1
 seaborn==0.13.2
+
+google-auth==2.27.0
+google-auth-oauthlib==1.2.1
+google-api-python-client==2.155.0
+gspread==6.0.2
+gspread-dataframe==3.3.1
+
+streamlit-google-auth
