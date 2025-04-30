@@ -186,9 +186,8 @@ def postop_clean_resume_book(resume_book):
 
 def update_gs_resume_book(resume_book):
 
-    # creds = Credentials.from_service_account_file("google_credentials.json", scopes=["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"])
+    creds = Credentials.from_service_account_file("google_credentials.json", scopes=["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"])    
     client = gspread.authorize(creds)
-    
     spreadsheet = client.open_by_url('https://docs.google.com/spreadsheets/d/1xqvrDynnWfslrSnOymMtJCrMvmAQBka70L7i8USc5Bs/edit?gid=0#gid=0')
     sheet = spreadsheet.get_worksheet(1)
     sheet.clear()
