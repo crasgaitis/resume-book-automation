@@ -1,10 +1,8 @@
-import gspread
-
+from streamlit_gsheets import GSheetsConnection
 import streamlit as st
 from PIL import Image
 import pandas as pd
 from app_utils import clean_dfs, postop_clean_resume_book, request_history, request_times, update_all_requested, add_all_requested, remove_all_requested, update_gs_requests, update_gs_resume_book
-from streamlit_gsheets import GSheetsConnection
 
 st.markdown(
      f"""
@@ -145,7 +143,7 @@ with st.container():
                 if st.session_state['possible_values'][value] == 0:
                     st.write('No requests to approve.')
                 else:               
-                    st.write(f"before {len(st.session_state['resume_book'])}")    
+                    # st.write(f"before {len(st.session_state['resume_book'])}")    
                     if value == list(st.session_state['possible_values'].keys())[0]:
                         st.session_state['resume_book'] = update_all_requested(st.session_state['df'], st.session_state['resume_book'])
                     elif value == list(st.session_state['possible_values'].keys())[1]:
@@ -163,13 +161,14 @@ with st.container():
                     st.session_state['df'].loc[st.session_state['df']['Do you want to add, update, or remove your resume?'] == value, 'Done?'] = 'yes'
                     update_gs_requests(st.session_state['df'])
                     
-                    st.write(f"after: {len(st.session_state['resume_book'])}")
-                    st.write(f"You approved {st.session_state['possible_values'][value]} requests.")
+                    # st.write(f"after: {len(st.session_state['resume_book'])}")
+                    st.write(f"Requests approved.")
                     
                        
     st.markdown('<hr class="custom-divider" style="border-top: 2px solid lightblue">', unsafe_allow_html=True)
     
     df_time = df_orig
     df_time['Timestamp'] = pd.to_datetime(df_orig['Timestamp'], errors='coerce')
+    # st.write(df_time)
     st.pyplot(request_history(df_time))
     st.pyplot(request_times(df_time))

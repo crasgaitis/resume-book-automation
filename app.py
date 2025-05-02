@@ -80,6 +80,4 @@ with st.container():
         st.header('Resume Book Tools')
         st.write("For advisers, streamline and automate the process of managing student requests and updating the Allen School resume book. For recruiters, filter through resumes to find talent to fit your specific needs!")
         
-# TODO: resume of the week!
-# resources, links
-# contact info
+    st.html(" <br/> <em> Made with 💜 by <a href = 'crasgaitis.github.io'>Catherine Rasgaitis </a> </em>")

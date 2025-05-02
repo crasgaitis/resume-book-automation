@@ -1,13 +1,12 @@
-
-from google.oauth2 import id_token
-from google.auth.transport import requests
-from google.auth.transport.requests import Request
-from google.auth import default
+import re
+import colorsys
+from sklearn.feature_extraction.text import TfidfVectorizer
+import matplotlib.colors as mcolors
 from googleapiclient.discovery import build
+from wordcloud import STOPWORDS
+from google.oauth2.service_account import Credentials
 import gspread
 from gspread_dataframe import set_with_dataframe
-from google.oauth2.service_account import Credentials
-
 from datetime import datetime, timedelta
 import numpy as np
 import matplotlib.pyplot as plt
@@ -252,3 +251,103 @@ def update_gs_requests(df):
     sheet.clear()
     set_with_dataframe(sheet, df)
     print("Sheet updated successfully.")
+
+def parse_rgb_string(rgb_str):
+    return tuple(map(int, re.findall(r'\d+', rgb_str)))
+
+def generate_shades(base_color, n_shades):
+    rgb = mcolors.to_rgb(base_color)
+    h, l, s = colorsys.rgb_to_hls(*rgb)
+
+    lightness_values = [l + (i - n_shades//2)*(0.8/n_shades) for i in range(n_shades)]
+    lightness_values = [min(max(0.15, lv), 0.9) for lv in lightness_values]
+
+    shades = [colorsys.hls_to_rgb(h, lv, s) for lv in lightness_values]
+    return [mcolors.to_hex(rgb) for rgb in shades]
+
+
+def preprocess_text(text):
+    text = text.lower()
+    text = re.sub(r'\b\w*\d\w*\b', '', text)
+    text = re.sub(r'\b\w*[^a-zA-Z\s]\w*\b', '', text)
+    text = ' '.join([w for w in text.split() if not (w.startswith('i') and len(w) <= 2)])
+    text = ' '.join([w for w in text.split() if not re.match(r'^(.)\1+$', w)])
+    return text
+
+def analyze_cooccurrence(st, user_input, alpha=1.0, beta=0.5):
+    df = st.session_state['text_series'].apply(preprocess_text)
+    vectorizer = TfidfVectorizer(stop_words=list(STOPWORDS), min_df=1)
+    tfidf_matrix = vectorizer.fit_transform(df)
+    feature_names = vectorizer.get_feature_names_out()
+    word_index = {word: i for i, word in enumerate(feature_names)}
+
+    if user_input not in word_index:
+        st.warning(f"'{user_input}' not found in vocabulary.")
+        return
+
+    user_idx = word_index[user_input]
+    user_presence = tfidf_matrix[:, user_idx].toarray().flatten() > 0
+    count_with_user = user_presence.sum()
+
+    if count_with_user == 1:
+        print("User word occurs in only 1 resume")
+        filter_threshold = 1
+    else:
+        filter_threshold = 2
+
+    co_word_counts = {}
+    for idx, present in enumerate(user_presence):
+        if present:
+            row = tfidf_matrix[idx].toarray().flatten()
+            for i, val in enumerate(row):
+                if val > 0 and i != user_idx:
+                    word = feature_names[i]
+                    co_word_counts[word] = co_word_counts.get(word, 0) + 1
+
+    filtered_words = {w for w, count in co_word_counts.items() if count >= filter_threshold}
+    final_scores = {}
+
+    for word in filtered_words:
+        w_idx = word_index[word]
+        resumes_with_word = tfidf_matrix[:, w_idx].toarray().flatten() > 0
+        a = ((user_presence) & (resumes_with_word)).sum()
+        b = ((~user_presence) & (resumes_with_word)).sum()
+        score = alpha * a - beta * b
+        final_scores[word] = (score, a, b)
+
+    sorted_words = sorted(final_scores.items(), key=lambda x: x[1][0], reverse=True)
+
+    # st.write("Top related words:")
+    # for word, (score, a, b) in sorted_words[:10]:
+    #     st.write(f"{word}: score={score:.2f} (with={a}, without={b})")
+
+    fig = plot_related_words(user_input, sorted_words)
+
+    return fig
+
+
+def plot_related_words(user_input, sorted_words, top_n=15):
+    sorted_words = sorted_words[:top_n]
+    angles = np.linspace(0, 2 * np.pi, len(sorted_words), endpoint=False)
+
+    scores = np.array([score for (_, (score, _, _)) in sorted_words])
+    min_length = 1.5
+    max_length = 4.0
+    norm_scores = (scores - scores.min()) / (scores.max() - scores.min() + 1e-6)
+    lengths = max_length - norm_scores * (max_length - min_length)
+
+    x = lengths * np.cos(angles)
+    y = lengths * np.sin(angles)
+
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.set_xlim(-max_length - 1, max_length + 1)
+    ax.set_ylim(-max_length - 1, max_length + 1)
+    ax.axis('off')
+
+    ax.text(0, 0, user_input, fontsize=14, ha='center', va='center', bbox=dict(facecolor='pink', boxstyle='circle'))
+
+    for i, ((word, (score, a, b)), xi, yi) in enumerate(zip(sorted_words, x, y)):
+        ax.plot([0, xi], [0, yi], color='gray', linewidth=1)
+        ax.text(xi, yi, word, fontsize=10, ha='center', va='center', bbox=dict(facecolor='lightgreen', boxstyle='round'))
+
+    return fig
