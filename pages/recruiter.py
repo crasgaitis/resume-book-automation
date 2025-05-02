@@ -95,7 +95,13 @@ st.markdown(
         color: black
     }}
 
+    h3 {{
+        color: white
+    }}
     
+    h2 {{
+        color: white
+    }}
      </style>
      """,
      unsafe_allow_html=True
