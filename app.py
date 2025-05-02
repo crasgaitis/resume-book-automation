@@ -64,7 +64,16 @@ st.markdown(
         font-weight: bold
     }}
     
+    h3 {{
+        color: white
+    }}
+    
+    h2 {{
+        color: white
+    }}
+    
      </style>
+     
      """,
      unsafe_allow_html=True
  )
@@ -80,4 +89,4 @@ with st.container():
         st.header('Resume Book Tools')
         st.write("For advisers, streamline and automate the process of managing student requests and updating the Allen School resume book. For recruiters, filter through resumes to find talent to fit your specific needs!")
         
-    st.html(" <br/> <em> Made with 💜 by <a href = 'crasgaitis.github.io'>Catherine Rasgaitis </a> </em>")
+    st.html(" <br/> Made with 🩷 by <em> <a href = 'crasgaitis.github.io'>Catherine Rasgaitis </a> </em>")
