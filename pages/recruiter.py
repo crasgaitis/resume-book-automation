@@ -317,7 +317,10 @@ with st.container():
     if user_input:
         user_input = preprocess_text(user_input.strip())
         fig2 = analyze_cooccurrence(st, user_input, alpha=1.0, beta=0.5)
-        st.pyplot(fig2)
+        if fig2 != None:
+            st.pyplot(fig2)
+        else:
+            st.write('This word does not appear sufficient times to generate graph.')
         
     st.subheader("Resume Filter Tool", divider='violet')
 

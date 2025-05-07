@@ -89,4 +89,4 @@ with st.container():
         st.header('Resume Book Tools')
         st.write("For advisers, streamline and automate the process of managing student requests and updating the Allen School resume book. For recruiters, filter through resumes to find talent to fit your specific needs!")
         
-    st.html(" <br/> Made with 🩷 by <em> <a href = 'crasgaitis.github.io'>Catherine Rasgaitis </a> </em>")
+    st.html(" <br/> Made with 🩷 by <em> <a href = 'https://crasgaitis.github.io' target='_blank' rel='noopener noreferrer'>Catherine Rasgaitis </a> </em>")
