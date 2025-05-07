@@ -1,5 +1,6 @@
 import re
 import colorsys
+import tempfile
 from sklearn.feature_extraction.text import TfidfVectorizer
 import matplotlib.colors as mcolors
 from googleapiclient.discovery import build
@@ -14,6 +15,7 @@ import math
 import seaborn as sns
 import pandas as pd
 import streamlit as st
+import json
 
 def clean_dfs(df, resume_book):
     df_cols_to_clean = ['Email ', 'Email Address', "First Name", "Last Name"]
@@ -187,7 +189,18 @@ def postop_clean_resume_book(resume_book):
 def update_gs_resume_book(resume_book):
 
     # google_credentials.json
-    creds = Credentials.from_service_account_file(st.secrets["google_service_account"], scopes=["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"])    
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False, suffix=".json") as tmp:
+        json.dump(st.secrets["google_service_account"], tmp)
+        tmp.flush() 
+        creds = Credentials.from_service_account_file(
+            tmp.name,
+            scopes=[
+                "https://www.googleapis.com/auth/spreadsheets",
+                "https://www.googleapis.com/auth/drive"
+            ]
+        )
+    
+    # creds = Credentials.from_service_account_file(st.secrets["google_service_account"], scopes=["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"])    
     client = gspread.authorize(creds)
     spreadsheet = client.open_by_url('https://docs.google.com/spreadsheets/d/1xqvrDynnWfslrSnOymMtJCrMvmAQBka70L7i8USc5Bs/edit?gid=0#gid=0')
     sheet = spreadsheet.get_worksheet(1)
